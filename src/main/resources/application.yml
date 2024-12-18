@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: kacosmetology-api
+  datasource:
+    username: postgres
+    password: password
+    url: jdbc:postgresql://localhost:5432/kacosmetology
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
