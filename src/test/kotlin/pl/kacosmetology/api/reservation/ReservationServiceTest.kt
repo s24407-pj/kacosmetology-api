@@ -160,7 +160,35 @@ class ReservationServiceTest {
     }
 
     @Test
-    fun updateReservation() {
-        //TODO
+    fun `should update reservation status`() {
+        // Given
+        val id = reservation1.id!!
+        val newStatus = CONFIRMED
+
+        every { mockRepository.findById(id) } returns Optional.of(reservation1)
+        every { mockRepository.save(any()) } returns reservation1
+
+        // When
+        underTestService.updateReservationStatus(id, newStatus)
+
+        // Then
+        verify { mockRepository.save(reservation1.copy(status = newStatus)) }
+    }
+
+    @Test
+    fun `should throw when update reservation status is equal`(){
+        // Given
+        val id = reservation1.id!!
+        val newStatus = CANCELLED
+
+        every { mockRepository.findById(id) } returns Optional.of(reservation1)
+
+        // When
+        val exception = assertThrows<ResourceConflictException> {
+            underTestService.updateReservationStatus(id, newStatus)
+        }
+
+        // Then
+        assertEquals(exception.message, "Status rezerwacji jest już aktualny.")
     }
 }

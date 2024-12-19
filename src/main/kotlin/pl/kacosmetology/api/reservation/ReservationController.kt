@@ -40,10 +40,12 @@ class ReservationController(val reservationService: ReservationService) {
     }
 
     @PostMapping("/{id}")
-    fun updateReservation(@PathVariable id: UUID, reservationRequest: ReservationRequest): ResponseEntity<Unit> {
-        val reservation = reservationRequest.toModel()
+    fun updateReservationStatus(
+        @PathVariable id: UUID,
+        @RequestParam status: ReservationStatus
+    ): ResponseEntity<Unit> {
 
-        reservationService.updateReservation(id, reservation)
+        reservationService.updateReservationStatus(id, status)
 
         return ResponseEntity(OK)
     }
