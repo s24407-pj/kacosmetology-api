@@ -19,6 +19,7 @@ data class Reservation(
     val serviceId: Int, //TODO: Implement service
     val email: String,
     val phoneNumber: String,
+    @Enumerated(EnumType.STRING)
     val status: ReservationStatus = PENDING,
     val notes: String?,
     val createdAt: LocalDateTime? = LocalDateTime.now(),
