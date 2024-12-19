@@ -18,7 +18,7 @@ class ReservationController(val reservationService: ReservationService) {
     ): ResponseEntity<List<ReservationResponse>> {
         val reservationsResponse = reservationService.getAllReservations(fromDate, toDate).map { it.toResponse() }
 
-        return ResponseEntity.ok(reservationsResponse)
+        return ResponseEntity(reservationsResponse,OK)
     }
 
 
@@ -26,17 +26,17 @@ class ReservationController(val reservationService: ReservationService) {
     fun getReservationById(@PathVariable id: UUID): ResponseEntity<ReservationResponse> {
         val reservationResponse = reservationService.getReservationById(id).toResponse()
 
-        return ResponseEntity.ok(reservationResponse)
+        return ResponseEntity(reservationResponse,OK)
     }
 
 
     @PostMapping("/")
-    fun createReservation(reservationRequest: ReservationRequest): ResponseEntity<Unit> {
+    fun createReservation(@RequestBody reservationRequest: ReservationRequest): ResponseEntity<UUID> {
         val reservation = reservationRequest.toModel()
 
-        reservationService.createReservation(reservation)
+        val id = reservationService.createReservation(reservation)
 
-        return ResponseEntity(CREATED)
+        return ResponseEntity(id,CREATED)
     }
 
     @PostMapping("/{id}")

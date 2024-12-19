@@ -12,4 +12,5 @@ data class ReservationResponse(
     val phoneNumber: String,
     val status: ReservationStatus,
     val notes: String?,
+    val serviceId: Int
 )

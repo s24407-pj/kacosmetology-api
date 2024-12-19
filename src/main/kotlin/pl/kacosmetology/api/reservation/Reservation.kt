@@ -1,9 +1,6 @@
 package pl.kacosmetology.api.reservation
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 import pl.kacosmetology.api.reservation.ReservationStatus.PENDING
 import java.time.LocalDateTime
 import java.util.*
@@ -32,6 +29,7 @@ data class Reservation(
         email = email,
         phoneNumber = phoneNumber,
         status = PENDING,
-        notes = notes
+        notes = notes,
+        serviceId = serviceId
     )
 }

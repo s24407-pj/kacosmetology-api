@@ -9,7 +9,6 @@ data class ReservationRequest(
     val phoneNumber: String,
     val appointmentDateTime: LocalDateTime,
     val serviceId: Int,
-    val status: ReservationStatus,
     val notes: String?,
 
     ) {

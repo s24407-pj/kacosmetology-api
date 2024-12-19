@@ -11,4 +11,9 @@ interface ReservationRepository : JpaRepository<Reservation, UUID> {
         dateAfter: LocalDateTime,
         dateBefore: LocalDateTime
     ): List<Reservation>
+
+    fun existsReservationByAppointmentDateTimeBetween(
+        dateAfter: LocalDateTime,
+        dateBefore: LocalDateTime
+    ): Boolean
 }

@@ -11,8 +11,9 @@ import java.time.LocalDateTime
 
 @DataJpaTest
 class ReservationRepositoryTest : AbstractTestContainers() {
+
     @Autowired
-    lateinit var underTest: ReservationRepository
+    lateinit var underTestRepository: ReservationRepository
 
     private val reservation1 = Reservation(
         appointmentDateTime = LocalDateTime.of(2024, 1, 1, 10, 0),
@@ -62,13 +63,45 @@ class ReservationRepositoryTest : AbstractTestContainers() {
             reservation1, reservation2, reservation3, reservation4
         )
 
-        underTest.saveAll(reservations)
+        underTestRepository.saveAll(reservations)
 
-        val result = underTest.findAllByAppointmentDateTimeBetween(
+        val result = underTestRepository.findAllByAppointmentDateTimeBetween(
             LocalDateTime.of(2024, 5, 1, 10, 0),
             LocalDateTime.of(2024, 6, 1, 23, 59)
         )
 
         assertEquals(2, result.size)
+    }
+
+    @Test
+    fun existsReservationByAppointmentDateTimeBetween() {
+        val reservations = listOf(
+            reservation1, reservation2, reservation3, reservation4
+        )
+
+        underTestRepository.saveAll(reservations)
+
+        val result = underTestRepository.existsReservationByAppointmentDateTimeBetween(
+            LocalDateTime.of(2024, 5, 1, 10, 0),
+            LocalDateTime.of(2024, 6, 1, 23, 59)
+        )
+
+        assertEquals(true, result)
+    }
+
+    @Test
+    fun notExistsReservationByAppointmentDateTimeBetween() {
+        val reservations = listOf(
+            reservation1, reservation2, reservation3, reservation4
+        )
+
+        underTestRepository.saveAll(reservations)
+
+        val result = underTestRepository.existsReservationByAppointmentDateTimeBetween(
+            LocalDateTime.of(2024, 7, 1, 10, 0),
+            LocalDateTime.of(2024, 8, 1, 23, 59)
+        )
+
+        assertEquals(false, result)
     }
 }

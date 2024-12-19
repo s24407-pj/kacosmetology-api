@@ -1,6 +1,7 @@
 package pl.kacosmetology.api.reservation
 
 import org.springframework.stereotype.Service
+import pl.kacosmetology.api.exception.ResourceConflictException
 import pl.kacosmetology.api.exception.ResourceNotFoundException
 import java.time.LocalDate
 import java.util.*
@@ -21,8 +22,18 @@ class ReservationService(val reservationRepository: ReservationRepository) {
     fun getReservationById(id: UUID): Reservation = reservationRepository.findById(id)
         .getOrElse { throw ResourceNotFoundException("Nie znaleziono takiej rezerwacji.") }
 
-    fun createReservation(reservation: Reservation) {
+    fun createReservation(reservation: Reservation):UUID {
+        if (reservationRepository.existsReservationByAppointmentDateTimeBetween(
+                reservation.appointmentDateTime,
+                reservation.appointmentDateTime.plusMinutes(30) //TODO change to service duration
+            )
+        ) {
+            throw ResourceConflictException("Rezerwacja w tym terminie już istnieje.")
+        }
+
         reservationRepository.save(reservation)
+
+        return reservation.id!!
     }
 
     fun updateReservation(id: UUID, reservation: Reservation) {
