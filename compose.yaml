@@ -1,9 +1,18 @@
 services:
   postgres:
     image: 'postgres:17-alpine'
+    container_name: postgres
     environment:
       - 'POSTGRES_DB=kacosmetology'
       - 'POSTGRES_PASSWORD=password'
       - 'POSTGRES_USER=postgres'
     ports:
       - '5432:5432'
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    environment:
+        - 'REDIS_PASSWORD=password'
+        - 'REDIS_USER=redis'
+    ports:
+      - "6379:6379"

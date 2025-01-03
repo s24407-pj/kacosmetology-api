@@ -12,14 +12,5 @@ data class ReservationRequest(
     val notes: String?,
 
     ) {
-    fun toModel() =
-        Reservation(
-            firstName = firstName,
-            lastName = lastName,
-            appointmentDateTime = appointmentDateTime,
-            serviceId = serviceId,
-            email = email,
-            phoneNumber = phoneNumber,
-            notes = notes
-        )
+
 }

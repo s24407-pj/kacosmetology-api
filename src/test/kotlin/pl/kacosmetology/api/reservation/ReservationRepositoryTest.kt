@@ -1,19 +1,18 @@
 package pl.kacosmetology.api.reservation
 
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import pl.kacosmetology.api.AbstractTestContainers
 import pl.kacosmetology.api.reservation.ReservationStatus.*
 import java.time.LocalDateTime
 
 
 @DataJpaTest
-class ReservationRepositoryTest : AbstractTestContainers() {
-
+class ReservationRepositoryTest(
     @Autowired
-    lateinit var underTestRepository: ReservationRepository
+    val underTestRepository: ReservationRepository
+) {
 
     private val reservation1 = Reservation(
         appointmentDateTime = LocalDateTime.of(2024, 1, 1, 10, 0),
@@ -58,7 +57,7 @@ class ReservationRepositoryTest : AbstractTestContainers() {
     )
 
     @Test
-    fun findAllByAppointmentDateTimeBetween() {
+    fun `should find all appointments between dates`() {
         val reservations = listOf(
             reservation1, reservation2, reservation3, reservation4
         )
@@ -74,7 +73,7 @@ class ReservationRepositoryTest : AbstractTestContainers() {
     }
 
     @Test
-    fun existsReservationByAppointmentDateTimeBetween() {
+    fun `should find existing reservation between dates`() {
         val reservations = listOf(
             reservation1, reservation2, reservation3, reservation4
         )
@@ -86,11 +85,11 @@ class ReservationRepositoryTest : AbstractTestContainers() {
             LocalDateTime.of(2024, 6, 1, 23, 59)
         )
 
-        assertEquals(true, result)
+        assertTrue(result)
     }
 
     @Test
-    fun notExistsReservationByAppointmentDateTimeBetween() {
+    fun `should not find existing reservation between dates`() {
         val reservations = listOf(
             reservation1, reservation2, reservation3, reservation4
         )
@@ -102,6 +101,6 @@ class ReservationRepositoryTest : AbstractTestContainers() {
             LocalDateTime.of(2024, 8, 1, 23, 59)
         )
 
-        assertEquals(false, result)
+        assertFalse(result)
     }
 }

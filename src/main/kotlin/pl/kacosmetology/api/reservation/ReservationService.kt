@@ -7,8 +7,10 @@ import java.time.LocalDate
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
 
+//TODO
 @Service
-class ReservationService(val reservationRepository: ReservationRepository) {
+class ReservationService(private val reservationRepository: ReservationRepository) {
+
     fun getAllReservations(
         fromDate: LocalDate,
         toDate: LocalDate
@@ -31,16 +33,16 @@ class ReservationService(val reservationRepository: ReservationRepository) {
             throw ResourceConflictException("Rezerwacja w tym terminie już istnieje.")
         }
 
-        reservationRepository.save(reservation)
 
-        return reservation.id!!
+
+        return reservationRepository.save(reservation).id!!
     }
 
     fun updateReservationStatus(id: UUID, newStatus: ReservationStatus) {
         val reservation = getReservationById(id)
 
         if (reservation.status == newStatus)
-             throw ResourceConflictException("Status rezerwacji jest już aktualny.")
+            throw ResourceConflictException("Status rezerwacji jest już aktualny.")
 
         val updatedReservation = reservation.copy(status = newStatus)
 

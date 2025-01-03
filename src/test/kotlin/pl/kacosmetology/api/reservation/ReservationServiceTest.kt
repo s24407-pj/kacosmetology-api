@@ -71,7 +71,7 @@ class ReservationServiceTest {
     lateinit var underTestService: ReservationService
 
     @Test
-    fun `should return all reservations`() {
+    fun `should return all reservations between dates`() {
         // Given
         every { mockRepository.findAllByAppointmentDateTimeBetween(any(), any()) } returns listOf(
             reservation1,
@@ -176,7 +176,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    fun `should throw when update reservation status is equal`(){
+    fun `should throw when update reservation status is equal`() {
         // Given
         val id = reservation1.id!!
         val newStatus = CANCELLED

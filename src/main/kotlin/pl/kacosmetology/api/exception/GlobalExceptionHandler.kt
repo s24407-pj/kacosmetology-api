@@ -1,6 +1,5 @@
 package pl.kacosmetology.api.exception
 
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
