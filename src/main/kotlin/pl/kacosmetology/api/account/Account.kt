@@ -11,27 +11,43 @@ data class Account(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID? = null,
+
     val firstName: String,
+
     val lastName: String,
+
     @Column(unique = true)
     val email: String,
+
     @Column(unique = true)
     val phoneNumber: String,
+
+    @Enumerated(EnumType.STRING)
+    val gender: Gender,
+
     val password: String,
+
+    val role: Role = Role.USER,
+
     @CreationTimestamp
     val createdAt: LocalDateTime? = null,
+
     @UpdateTimestamp
     val updatedAt: LocalDateTime? = null,
+
     @Version
     val version: Long? = null
 ) {
+
+
     fun toResponse() =
         AccountResponse(
             id = id!!,
             firstName = firstName,
             lastName = lastName,
             email = email,
-            phoneNumber = phoneNumber
+            phoneNumber = phoneNumber,
+            gender = gender
         )
 
 

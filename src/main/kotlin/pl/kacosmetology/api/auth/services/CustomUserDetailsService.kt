@@ -9,7 +9,10 @@ import pl.kacosmetology.api.account.Account
 import pl.kacosmetology.api.account.AccountRepository
 
 @Service
-class CustomUserDetailsService(private val accountRepository: AccountRepository) : UserDetailsService {
+class CustomUserDetailsService(
+    private val accountRepository: AccountRepository
+) : UserDetailsService {
+
     override fun loadUserByUsername(username: String): UserDetails =
         accountRepository.findByEmail(username)
             ?.mapToUserDetails()

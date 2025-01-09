@@ -7,7 +7,6 @@ data class AccountResponse(
     val firstName: String,
     val lastName: String,
     val email: String,
+    val gender: Gender,
     val phoneNumber: String
-) {
-
-}
+)

@@ -1,8 +1,11 @@
 package pl.kacosmetology.api.account
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -11,12 +14,19 @@ import java.util.*
 class AccountController(private val accountService: AccountService) {
 
     @PostMapping
-    fun createAccount(@RequestBody accountRequest: AccountRequest): ResponseEntity<UUID> {
+    fun createAccount(@Valid @RequestBody accountRequest: AccountRequest): ResponseEntity<UUID> {
         val account = accountRequest.toModel()
 
         val id = accountService.createAccount(account)
 
         return ResponseEntity(id, CREATED)
+    }
+
+    @GetMapping("/me")
+    fun getMyAccount(@AuthenticationPrincipal userDetails: UserDetails): ResponseEntity<AccountResponse> {
+        val account = accountService.getByEmail(userDetails.username)
+
+        return ResponseEntity(account.toResponse(), OK)
     }
 
     @GetMapping
@@ -32,7 +42,8 @@ class AccountController(private val accountService: AccountService) {
             lastName = lastName,
             email = email,
             phoneNumber = phoneNumber,
-            password = password
+            password = password,
+            gender = gender
         )
 
 }

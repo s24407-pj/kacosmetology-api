@@ -1,5 +1,6 @@
 package pl.kacosmetology.api.reservation
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
@@ -32,7 +33,7 @@ class ReservationController(private val reservationService: ReservationService) 
 
 
     @PostMapping
-    fun createReservation(@RequestBody reservationRequest: ReservationRequest): ResponseEntity<UUID> {
+    fun createReservation(@Valid @RequestBody reservationRequest: ReservationRequest): ResponseEntity<UUID> {
         val reservation = reservationRequest.toModel()
 
         val id = reservationService.createReservation(reservation)

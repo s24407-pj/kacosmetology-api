@@ -9,13 +9,14 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import pl.kacosmetology.api.auth.models.TokenType
 import pl.kacosmetology.api.auth.services.CustomUserDetailsService
 import pl.kacosmetology.api.auth.services.TokenService
 
 @Component
 class JwtAuthFilter(
     private val userDetailsService: CustomUserDetailsService,
-    private val tokenService: TokenService
+    private val tokenService: TokenService,
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -30,6 +31,12 @@ class JwtAuthFilter(
         }
 
         val jwtToken = authHeader!!.extractTokenValue()
+
+        if (!isAccessToken(jwtToken)) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val email = tokenService.extractEmail(jwtToken)
 
         if (email == null && SecurityContextHolder.getContext().authentication != null) return
@@ -50,7 +57,9 @@ class JwtAuthFilter(
         SecurityContextHolder.getContext().authentication = authToken
     }
 
-    private fun String?.doesNotContainBearer(): Boolean = this == null || !this.startsWith("Bearer ")
-    private fun String.extractTokenValue(): String = this.substringAfter("Bearer ")
+    private fun isAccessToken(token: String): Boolean = tokenService.extractTokenType(token) == TokenType.ACCESS
 
+    private fun String?.doesNotContainBearer(): Boolean = this == null || !this.startsWith("Bearer ")
+
+    private fun String.extractTokenValue(): String = this.substringAfter("Bearer ")
 }

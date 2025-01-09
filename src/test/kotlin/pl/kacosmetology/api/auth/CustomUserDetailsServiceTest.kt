@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import pl.kacosmetology.api.account.Account
 import pl.kacosmetology.api.account.AccountRepository
+import pl.kacosmetology.api.account.Gender.FEMALE
 import pl.kacosmetology.api.auth.services.CustomUserDetailsService
 
 @ExtendWith(MockKExtension::class)
@@ -21,7 +22,8 @@ class CustomUserDetailsServiceTest {
         lastName = "Kowalski",
         email = "test@email.com",
         phoneNumber = "123456789",
-        password = "password"
+        password = "password",
+        gender = FEMALE
     )
 
     @MockK

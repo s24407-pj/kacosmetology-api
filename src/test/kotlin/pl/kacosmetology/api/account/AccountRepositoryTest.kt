@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import pl.kacosmetology.api.account.Gender.MALE
 import kotlin.test.Test
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -18,11 +19,12 @@ class AccountRepositoryTest(
         firstName = "testemailcom",
         lastName = "testemailcom",
         phoneNumber = "555556789",
-        password = "password",
+        gender = MALE,
+        password = "password2!AA",
     )
 
     @Test
-    fun `should return false when email and phone not found`() {
+    fun `should return false when account with provided email and phone not found`() {
         // given
         val email = "email@test.pl"
         val phoneNumber = "123456789"
@@ -35,7 +37,7 @@ class AccountRepositoryTest(
     }
 
     @Test
-    fun `should return true when email found`() {
+    fun `should return true when account with provided email found`() {
         // given
         val email = account.email
         val phoneNumber = "123456789"
@@ -48,7 +50,7 @@ class AccountRepositoryTest(
     }
 
     @Test
-    fun `should return true when phone number found`() {
+    fun `should return true when account with provided phone number found`() {
         // given
         val email = "someemail@wp.pl"
         val phoneNumber = account.phoneNumber
