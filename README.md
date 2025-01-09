@@ -26,6 +26,9 @@ The backend is built using **Kotlin**, **Spring Boot**, **Spring Security**, **S
 - **Input Validation**:
     - **Spring Validation** is used for validating client inputs, such as registration data (email, phone number, password) and reservation details (service type, date, and time).
 
+- **CI: GH actions**:
+    -  For Continuous Integration (CI), automating the process of testing and building the project.
+
 ---
 
 ## Technologies Used:
