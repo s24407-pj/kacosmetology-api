@@ -7,9 +7,10 @@ import java.time.LocalDate
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
 
-//TODO
 @Service
-class ReservationService(private val reservationRepository: ReservationRepository) {
+class ReservationService(
+    private val reservationRepository: ReservationRepository
+) {
 
     fun getAllReservations(
         fromDate: LocalDate,

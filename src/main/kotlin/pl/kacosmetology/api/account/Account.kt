@@ -37,18 +37,4 @@ data class Account(
 
     @Version
     val version: Long? = null
-) {
-
-
-    fun toResponse() =
-        AccountResponse(
-            id = id!!,
-            firstName = firstName,
-            lastName = lastName,
-            email = email,
-            phoneNumber = phoneNumber,
-            gender = gender
-        )
-
-
-}
+)

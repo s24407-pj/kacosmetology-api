@@ -2,6 +2,7 @@ package pl.kacosmetology.api.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod.PATCH
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -31,6 +32,10 @@ class SecurityConfiguration(
                     .permitAll()
                     .requestMatchers("/api/v1/accounts**")
                     .hasRole("ADMIN")
+                    .requestMatchers("/api/v1/services**")
+                    .permitAll()
+                    .requestMatchers(PATCH, "/api/v1/services/**")
+                    .permitAll()
                     .anyRequest()
                     .fullyAuthenticated()
             }

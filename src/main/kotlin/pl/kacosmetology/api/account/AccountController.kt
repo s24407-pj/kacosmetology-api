@@ -7,32 +7,34 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
-import java.util.*
+import java.net.URI
 
 @RestController
 @RequestMapping("/api/v1/accounts")
-class AccountController(private val accountService: AccountService) {
-
+class AccountController(
+    private val accountService: AccountService
+) {
     @PostMapping
-    fun createAccount(@Valid @RequestBody accountRequest: AccountRequest): ResponseEntity<UUID> {
+    fun createAccount(@Valid @RequestBody accountRequest: AccountRequest): ResponseEntity<URI> {
         val account = accountRequest.toModel()
 
         val id = accountService.createAccount(account)
+        val uri = URI.create("/api/v1/accounts/$id")
 
-        return ResponseEntity(id, CREATED)
+        return ResponseEntity(uri, CREATED)
     }
 
     @GetMapping("/me")
     fun getMyAccount(@AuthenticationPrincipal userDetails: UserDetails): ResponseEntity<AccountResponse> {
         val account = accountService.getByEmail(userDetails.username)
-
-        return ResponseEntity(account.toResponse(), OK)
+        val accountResponse = account.toResponse()
+        return ResponseEntity(accountResponse, OK)
     }
 
     @GetMapping
     fun getAllAccounts(): ResponseEntity<List<AccountResponse>> {
-        val accountsResponse = accountService.getAllAccounts().map { it.toResponse() }
-
+        val accounts = accountService.getAllAccounts()
+        val accountsResponse = accounts.map { it.toResponse() }
         return ResponseEntity(accountsResponse, OK)
     }
 
@@ -43,6 +45,16 @@ class AccountController(private val accountService: AccountService) {
             email = email,
             phoneNumber = phoneNumber,
             password = password,
+            gender = gender
+        )
+
+    fun Account.toResponse() =
+        AccountResponse(
+            id = id!!,
+            firstName = firstName,
+            lastName = lastName,
+            email = email,
+            phoneNumber = phoneNumber,
             gender = gender
         )
 

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.security.crypto.password.PasswordEncoder
 import pl.kacosmetology.api.account.Gender.MALE
 import pl.kacosmetology.api.exception.ResourceConflictException
+import pl.kacosmetology.api.exception.ResourceNotFoundException
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
@@ -97,26 +98,40 @@ class AccountServiceTest {
     @Test
     fun `should get all accounts`() {
         // Given
-        val account1 = Account(
-            firstName = "Jan",
-            lastName = "Kowalski",
-            email = "email@wp.pl",
-            phoneNumber = "123456789",
-            id = UUID.randomUUID(),
-            gender = MALE,
-            password = "password123#.",
-            role = Role.USER,
-            createdAt = null,
-            updatedAt = null,
-            version = 1
-        )
-
-        every { accountRepositoryMock.findAll() } returns listOf(account1)
+        every { accountRepositoryMock.findAll() } returns listOf(account)
 
         // When
         val result = underTest.getAllAccounts()
 
         // Then
         assert(result.size == 1)
+    }
+
+    @Test
+    fun `should get account by email`() {
+        // Given
+        val email = account.email
+        every { accountRepositoryMock.findByEmail(email) } returns account
+
+        // When
+        val result = underTest.getByEmail(email)
+
+        // Then
+        assert(result == account)
+    }
+
+    @Test
+    fun `should throw when account by email not found`() {
+        // Given
+        val email = account.email
+        every { accountRepositoryMock.findByEmail(email) } returns null
+
+        // When
+        try {
+            underTest.getByEmail(email)
+        } catch (e: ResourceNotFoundException) {
+            // Then
+            assert(true)
+        }
     }
 }
