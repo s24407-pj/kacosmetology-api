@@ -14,7 +14,7 @@ import pl.kacosmetology.api.auth.services.CustomUserDetailsService
 
 @Configuration
 @EnableConfigurationProperties(JwtProperties::class)
-class Configuration {
+class AuthConfiguration {
 
     @Bean
     fun userDetailsService(accountRepository: AccountRepository): UserDetailsService =
