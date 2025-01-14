@@ -3,6 +3,7 @@ package pl.kacosmetology.api.account
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import pl.kacosmetology.api.account.Role.USER
 import java.time.LocalDateTime
 import java.util.*
 
@@ -27,7 +28,7 @@ data class Account(
 
     val password: String,
 
-    val role: Role = Role.USER,
+    val role: Role = USER,
 
     @CreationTimestamp
     val createdAt: LocalDateTime? = null,
