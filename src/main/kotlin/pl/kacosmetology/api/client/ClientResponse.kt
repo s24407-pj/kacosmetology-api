@@ -1,9 +1,9 @@
-package pl.kacosmetology.api.account
+package pl.kacosmetology.api.client
 
 import java.util.*
 
-data class AccountResponse(
-    val id: UUID,
+data class ClientResponse(
+    val id: Long,
     val firstName: String,
     val lastName: String,
     val email: String,

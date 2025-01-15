@@ -1,11 +1,11 @@
-package pl.kacosmetology.api.account
+package pl.kacosmetology.api.client
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
-data class AccountRequest(
+data class ClientRequest(
     @field:NotBlank(message = "Imię nie może być puste")
     @field:Size(min = 2, max = 50, message = "Imię musi mieć od 2 do 50 znaków")
     val firstName: String,

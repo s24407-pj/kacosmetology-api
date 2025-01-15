@@ -7,6 +7,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Version
 import org.hibernate.annotations.UpdateTimestamp
 import java.io.Serializable
+import java.net.URL
 import java.time.LocalDateTime
 
 @Entity
@@ -26,6 +27,8 @@ data class Service(
     val duration: Int,
 
     val isAvailable: Boolean? = true,
+
+    val imageURL: URL? = null,
 
     @UpdateTimestamp
     val updatedAt: LocalDateTime? = null,

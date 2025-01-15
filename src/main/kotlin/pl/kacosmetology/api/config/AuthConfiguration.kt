@@ -9,7 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import pl.kacosmetology.api.account.AccountRepository
+import pl.kacosmetology.api.client.ClientRepository
 import pl.kacosmetology.api.auth.services.CustomUserDetailsService
 
 @Configuration
@@ -17,17 +17,17 @@ import pl.kacosmetology.api.auth.services.CustomUserDetailsService
 class AuthConfiguration {
 
     @Bean
-    fun userDetailsService(accountRepository: AccountRepository): UserDetailsService =
-        CustomUserDetailsService(accountRepository)
+    fun userDetailsService(clientRepository: ClientRepository): UserDetailsService =
+        CustomUserDetailsService(clientRepository)
 
     @Bean
     fun encoder() = BCryptPasswordEncoder()
 
     @Bean
-    fun authProvider(accountRepository: AccountRepository): AuthenticationProvider =
+    fun authProvider(clientRepository: ClientRepository): AuthenticationProvider =
         DaoAuthenticationProvider()
             .also {
-                it.setUserDetailsService(userDetailsService(accountRepository))
+                it.setUserDetailsService(userDetailsService(clientRepository))
                 it.setPasswordEncoder(encoder())
             }
 

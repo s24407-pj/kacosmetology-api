@@ -1,4 +1,4 @@
-package pl.kacosmetology.api.account
+package pl.kacosmetology.api.client
 
 enum class Gender {
     FEMALE, MALE

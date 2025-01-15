@@ -8,16 +8,16 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import pl.kacosmetology.api.account.Account
-import pl.kacosmetology.api.account.AccountRepository
-import pl.kacosmetology.api.account.Gender.FEMALE
+import pl.kacosmetology.api.client.Client
+import pl.kacosmetology.api.client.ClientRepository
+import pl.kacosmetology.api.client.Gender.FEMALE
 import pl.kacosmetology.api.auth.services.CustomUserDetailsService
 
 @ExtendWith(MockKExtension::class)
 class CustomUserDetailsServiceTest {
 
 
-    private val account = Account(
+    private val client = Client(
         firstName = "Janusz",
         lastName = "Kowalski",
         email = "test@email.com",
@@ -27,7 +27,7 @@ class CustomUserDetailsServiceTest {
     )
 
     @MockK
-    lateinit var mockRepository: AccountRepository
+    lateinit var mockRepository: ClientRepository
 
     @InjectMockKs
     lateinit var underTestService: CustomUserDetailsService
@@ -36,15 +36,15 @@ class CustomUserDetailsServiceTest {
     fun `should load by username`() {
         // Given
 
-        every { mockRepository.findByEmail(any()) } returns account
+        every { mockRepository.findByEmail(any()) } returns client
 
 
         // When
-        val result = underTestService.loadUserByUsername(account.email)
+        val result = underTestService.loadUserByUsername(client.email)
 
         // Then
-        assert(result.username == account.email)
-        assert(result.password == account.password)
+        assert(result.username == client.email)
+        assert(result.password == client.password)
 
     }
 
@@ -55,7 +55,7 @@ class CustomUserDetailsServiceTest {
 
         // When
         val exception = assertThrows<UsernameNotFoundException> {
-            underTestService.loadUserByUsername(account.email)
+            underTestService.loadUserByUsername(client.email)
         }
 
         // Then

@@ -1,4 +1,4 @@
-package pl.kacosmetology.api.account
+package pl.kacosmetology.api.client
 
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus.CREATED
@@ -10,36 +10,36 @@ import org.springframework.web.bind.annotation.*
 import java.net.URI
 
 @RestController
-@RequestMapping("/api/v1/accounts")
-class AccountController(
-    private val accountService: AccountService
+@RequestMapping("/api/v1/clients")
+class ClientController(
+    private val clientService: ClientService
 ) {
     @PostMapping
-    fun createAccount(@Valid @RequestBody accountRequest: AccountRequest): ResponseEntity<URI> {
-        val account = accountRequest.toModel()
+    fun createAccount(@Valid @RequestBody clientRequest: ClientRequest): ResponseEntity<URI> {
+        val account = clientRequest.toModel()
 
-        val id = accountService.createAccount(account)
-        val uri = URI.create("/api/v1/accounts/$id")
+        val id = clientService.createAccount(account)
+        val uri = URI.create("/api/v1/clients/$id")
 
         return ResponseEntity(uri, CREATED)
     }
 
     @GetMapping("/me")
-    fun getMyAccount(@AuthenticationPrincipal userDetails: UserDetails): ResponseEntity<AccountResponse> {
-        val account = accountService.getByEmail(userDetails.username)
+    fun getMyClientAccount(@AuthenticationPrincipal userDetails: UserDetails): ResponseEntity<ClientResponse> {
+        val account = clientService.getByEmail(userDetails.username)
         val accountResponse = account.toResponse()
         return ResponseEntity(accountResponse, OK)
     }
 
     @GetMapping
-    fun getAllAccounts(): ResponseEntity<List<AccountResponse>> {
-        val accounts = accountService.getAllAccounts()
+    fun getAllClients(): ResponseEntity<List<ClientResponse>> {
+        val accounts = clientService.getAllAccounts()
         val accountsResponse = accounts.map { it.toResponse() }
         return ResponseEntity(accountsResponse, OK)
     }
 
-    private fun AccountRequest.toModel() =
-        Account(
+    private fun ClientRequest.toModel() =
+        Client(
             firstName = firstName,
             lastName = lastName,
             email = email,
@@ -48,8 +48,8 @@ class AccountController(
             gender = gender
         )
 
-    fun Account.toResponse() =
-        AccountResponse(
+    fun Client.toResponse() =
+        ClientResponse(
             id = id!!,
             firstName = firstName,
             lastName = lastName,

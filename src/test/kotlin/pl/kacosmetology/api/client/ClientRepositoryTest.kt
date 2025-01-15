@@ -1,20 +1,20 @@
-package pl.kacosmetology.api.account
+package pl.kacosmetology.api.client
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import pl.kacosmetology.api.account.Gender.MALE
+import pl.kacosmetology.api.client.Gender.MALE
 import kotlin.test.Test
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @DataJpaTest
-class AccountRepositoryTest(
+class ClientRepositoryTest(
     @Autowired
-    val underTest: AccountRepository
+    val underTest: ClientRepository
 ) {
-    private val account = Account(
+    private val client = Client(
         email = "test@email.com",
         firstName = "testemailcom",
         lastName = "testemailcom",
@@ -28,7 +28,7 @@ class AccountRepositoryTest(
         // given
         val email = "email@test.pl"
         val phoneNumber = "123456789"
-        underTest.save(account)
+        underTest.save(client)
         // when
         val result = underTest.existsAccountByEmailOrPhoneNumber(email, phoneNumber)
 
@@ -39,9 +39,9 @@ class AccountRepositoryTest(
     @Test
     fun `should return true when account with provided email found`() {
         // given
-        val email = account.email
+        val email = client.email
         val phoneNumber = "123456789"
-        underTest.save(account)
+        underTest.save(client)
         // when
         val result = underTest.existsAccountByEmailOrPhoneNumber(email, phoneNumber)
 
@@ -53,8 +53,8 @@ class AccountRepositoryTest(
     fun `should return true when account with provided phone number found`() {
         // given
         val email = "someemail@wp.pl"
-        val phoneNumber = account.phoneNumber
-        underTest.save(account)
+        val phoneNumber = client.phoneNumber
+        underTest.save(client)
         // when
         val result = underTest.existsAccountByEmailOrPhoneNumber(email, phoneNumber)
 
@@ -65,19 +65,19 @@ class AccountRepositoryTest(
     @Test
     fun `should find account by email`() {
         // given
-        underTest.save(account)
+        underTest.save(client)
 
         // when
-        val result = underTest.findByEmail(account.email)
+        val result = underTest.findByEmail(client.email)
 
         // then
-        assertEquals(account, result)
+        assertEquals(client, result)
     }
 
     @Test
     fun `should return null when account not found by email`() {
         // given
-        underTest.save(account)
+        underTest.save(client)
         val email = "email@wpl.pl"
 
         // when

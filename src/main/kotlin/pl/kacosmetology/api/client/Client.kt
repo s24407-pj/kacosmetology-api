@@ -1,17 +1,16 @@
-package pl.kacosmetology.api.account
+package pl.kacosmetology.api.client
 
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import pl.kacosmetology.api.account.Role.USER
+import pl.kacosmetology.api.client.Role.USER
 import java.time.LocalDateTime
-import java.util.*
 
 @Entity
-data class Account(
+data class Client(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    val id: UUID? = null,
+    @GeneratedValue
+    val id: Long? = null,
 
     val firstName: String,
 
