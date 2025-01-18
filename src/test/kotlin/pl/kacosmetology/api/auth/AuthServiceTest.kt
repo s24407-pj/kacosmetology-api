@@ -12,10 +12,8 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetails
 import pl.kacosmetology.api.auth.models.RefreshToken
 import pl.kacosmetology.api.auth.models.requests.AuthRequest
-import pl.kacosmetology.api.auth.models.requests.RefreshTokenRequest
 import pl.kacosmetology.api.auth.repositories.RefreshTokenRepository
 import pl.kacosmetology.api.auth.services.AuthService
-import pl.kacosmetology.api.auth.services.BlacklistTokenService
 import pl.kacosmetology.api.auth.services.CustomUserDetailsService
 import pl.kacosmetology.api.auth.services.TokenService
 import pl.kacosmetology.api.config.JwtProperties
@@ -24,9 +22,6 @@ import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class AuthServiceTest {
-
-    @MockK
-    lateinit var mockBlacklistTokenService: BlacklistTokenService
 
     @MockK
     lateinit var mockRefreshTokenRepository: RefreshTokenRepository
@@ -49,22 +44,25 @@ class AuthServiceTest {
     @Test
     fun `should authenticate`() {
         val authRequest = AuthRequest("email", "password")
+        val mockUserDetails = mockk<UserDetails>()
         // given
-        every { mockUserDetailsService.loadUserByUsername(authRequest.email) } returns mockk()
+        every { mockUserDetailsService.loadUserByUsername(authRequest.email) } returns mockUserDetails
         every { mockJwtProperties.accessTokenExpirationSeconds } returns 1000
         every { mockJwtProperties.refreshTokenExpirationSeconds } returns 1000
         every { mockAuthManager.authenticate(any()) } returns mockk()
         every { mockTokenService.generate(any(), any()) } returns "token"
         every { mockRefreshTokenRepository.save(any()) } returns mockk()
+        every { mockUserDetails.username } returns authRequest.email
 
 
         // when
         val result = underTestService.authenticate(authRequest)
 
         // then
-
         assert(result.accessToken.isNotEmpty())
-        assert(result.refreshToken.isNotEmpty())
+        assert(result.refreshTokenCookie.secure)
+        assert(result.refreshTokenCookie.isHttpOnly)
+        assert(result.expires > 0)
         verify { mockAuthManager.authenticate(any()) }
         verify { mockUserDetailsService.loadUserByUsername(authRequest.email) }
 
@@ -95,7 +93,7 @@ class AuthServiceTest {
         val email = "email"
         val userMock = mockk<UserDetails>()
         val refreshTokenMock = RefreshToken(token, email, 1000)
-        val refreshTokenRequest = RefreshTokenRequest(token, false)
+
 
         every { mockTokenService.extractEmail(token) } returns email
         every { mockUserDetailsService.loadUserByUsername(email) } returns userMock
@@ -105,13 +103,11 @@ class AuthServiceTest {
         every { mockJwtProperties.refreshTokenExpirationSeconds } returns 1000
         every { mockTokenService.generate(any(), any()) } returns "token"
         every { userMock.username } returns email
-        every { mockBlacklistTokenService.isBlacklisted(token) } returns false
         every { mockTokenService.getExpirationDate(token) } returns Date()
-        every { mockBlacklistTokenService.addToBlacklist(token) } returns Unit
         every { mockRefreshTokenRepository.save(any()) } returns mockk()
-
+        every { mockRefreshTokenRepository.deleteById(token) } returns mockk()
         // when
-        val result = underTestService.refreshAccessToken(refreshTokenRequest)
+        val result = underTestService.refreshAccessToken(token)
 
         // then
         verify { mockTokenService.extractEmail(token) }
@@ -130,19 +126,17 @@ class AuthServiceTest {
         val email = "email"
         val userMock = mockk<UserDetails>()
         val refreshTokenMock = RefreshToken(token, email, 1000)
-        val refreshTokenRequest = RefreshTokenRequest(token, false)
 
         every { mockTokenService.extractEmail(token) } returns email
         every { mockUserDetailsService.loadUserByUsername(email) } returns userMock
         every { mockRefreshTokenRepository.findById(token) } returns Optional.of(refreshTokenMock)
         every { mockTokenService.isExpired(token) } returns true
         every { userMock.username } returns email
-        every { mockBlacklistTokenService.isBlacklisted(token) } returns false
         every { mockTokenService.getExpirationDate(token) } returns Date()
 
         // when
         try {
-            underTestService.refreshAccessToken(refreshTokenRequest)
+            underTestService.refreshAccessToken(token)
         } catch (e: InvalidTokenException) {
             // then
             assert(true)

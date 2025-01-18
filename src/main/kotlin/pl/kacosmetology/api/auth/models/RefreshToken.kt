@@ -10,7 +10,9 @@ import java.io.Serializable
 data class RefreshToken(
     @Id
     val token: String,
+
     val email: String,
+
     @TimeToLive
     val ttl: Long
 ) : Serializable

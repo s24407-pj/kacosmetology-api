@@ -26,35 +26,26 @@ class JwtAuthFilter(
     ) {
         val authHeader: String? = request.getHeader("Authorization")
 
-        if (authHeader.doesNotContainBearer()) {
-            filterChain.doFilter(request, response)
-            return
+        if (!authHeader.doesNotContainBearer()) {
+            try {
+                val jwtToken = authHeader!!.extractTokenValue()
+                val email = tokenService.extractEmail(jwtToken)
+
+                if (SecurityContextHolder.getContext().authentication == null && email!=null){
+                    val userDetails: UserDetails? = userDetailsService.loadUserByUsername(email)
+
+                    if(userDetails?.username == email){
+                        updateSecurityContext(userDetails, request)
+                    }
+                }
+            } catch (e: Exception) {
+                response.writer.write(
+                    """{"error": "Filter Authorization error: 
+                    |${e.message ?: "unknown error"}"}""".trimMargin()
+                )
+            }
         }
 
-        val jwtToken = authHeader!!.extractTokenValue()
-
-        if (!isAccessToken(jwtToken)) {
-            filterChain.doFilter(request, response)
-            return
-        }
-
-        val email = tokenService.extractEmail(jwtToken)
-
-        if (email == null && SecurityContextHolder.getContext().authentication != null) {
-            filterChain.doFilter(request, response)
-            return
-        }
-
-
-        val foundAccount = userDetailsService.loadUserByUsername(email!!) ?: run {
-            filterChain.doFilter(request, response)
-            return
-        }
-
-
-        if (tokenService.isValid(jwtToken, foundAccount)) {
-            updateSecurityContext(foundAccount, request)
-        }
 
         filterChain.doFilter(request, response)
     }

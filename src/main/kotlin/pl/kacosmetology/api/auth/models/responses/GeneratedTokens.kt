@@ -1,7 +1,9 @@
 package pl.kacosmetology.api.auth.models.responses
 
-data class AuthResponse(
+import jakarta.servlet.http.Cookie
+
+data class GeneratedTokens(
     val accessToken: String,
     val expires: Long,
-    val isAdmin: Boolean? = false
+    val refreshTokenCookie: Cookie
 )

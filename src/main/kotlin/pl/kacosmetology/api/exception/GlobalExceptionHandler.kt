@@ -1,5 +1,6 @@
 package pl.kacosmetology.api.exception
 
+import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.http.HttpStatus.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -31,6 +32,12 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler
     fun handleInvalidTokenException(ex: InvalidTokenException): ResponseEntity<ApiError> {
+        val apiError = ApiError(UNAUTHORIZED.value(), ex.message)
+        return ResponseEntity(apiError, UNAUTHORIZED)
+    }
+
+    @ExceptionHandler(ExpiredJwtException::class)
+    fun handleExpiredJwtException(ex: ExpiredJwtException): ResponseEntity<ApiError> {
         val apiError = ApiError(UNAUTHORIZED.value(), ex.message)
         return ResponseEntity(apiError, UNAUTHORIZED)
     }

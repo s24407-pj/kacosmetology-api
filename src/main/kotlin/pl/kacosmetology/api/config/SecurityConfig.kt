@@ -24,6 +24,8 @@ class SecurityConfig(
             .csrf { it.disable() } //TODO: check
             .authorizeHttpRequests {
                 it
+                    .requestMatchers("api/v1/services")
+                    .fullyAuthenticated()
                     .anyRequest()
                     .permitAll()
             }
