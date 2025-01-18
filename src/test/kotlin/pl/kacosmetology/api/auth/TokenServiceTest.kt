@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -126,17 +127,22 @@ class TokenServiceTest {
     }
 
     @Test
-    fun `should throw when token is not valid`() {
-        // Given
-        val userDetailsMock = mockk<UserDetails>()
-        every { userDetailsMock.username } returns "diff@example.com"
-        val tokenWithDifferentUsername =
-            "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbWFpbEBleGFtcGxlLmNvbSIsImlhdCI6MTczNjg3MDcwNywiZXhwIjoxNzM2OTcwNzA2LCJ0eXBlIjoiQUNDRVNTIn0.nWZeGFOZ-rC5m04dP1hcvZDEpuWEi2JVkPYdJlRUyZhi8-6SZSGyelDxLDcYLaT8o5rvbrpDUGs7__CpoEKw5Q"
+    fun `should return false for an invalid token`() {
+        // Arrange
+        val userDetailsMock = mockk<UserDetails> {
+            every { username } returns "wrong@example.com" // Intentionally mismatch
+        }
+        val token = underTest.generate(
+            mockk {
+                every { username } returns "correct@example.com"
+            },
+            ACCESS
+        )
 
-        // when
-        val result = underTest.isValid(tokenWithDifferentUsername, userDetailsMock)
+        // Act
+        val isValid = underTest.isValid(token, userDetailsMock)
 
-        // then
-        assert(!result)
+        // Assert
+        assertFalse(isValid)
     }
 }

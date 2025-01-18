@@ -2,8 +2,6 @@ package pl.kacosmetology.api.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod.PATCH
-import org.springframework.http.HttpMethod.POST
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -13,7 +11,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration(
+class SecurityConfig(
     private val authenticationProvider: AuthenticationProvider
 ) {
 
@@ -26,18 +24,8 @@ class SecurityConfiguration(
             .csrf { it.disable() } //TODO: check
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/v1/auth", "/api/v1/auth/refresh", "/error")
-                    .permitAll()
-                    .requestMatchers(POST, "/api/v1/accounts")
-                    .permitAll()
-                    .requestMatchers("/api/v1/accounts**")
-                    .hasRole("ADMIN")
-                    .requestMatchers("/api/v1/services**")
-                    .permitAll()
-                    .requestMatchers(PATCH, "/api/v1/services/**")
-                    .permitAll()
                     .anyRequest()
-                    .fullyAuthenticated()
+                    .permitAll()
             }
             .sessionManagement {
                 it.sessionCreationPolicy(STATELESS)

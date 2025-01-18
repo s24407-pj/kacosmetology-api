@@ -1,6 +1,4 @@
-package pl.kacosmetology.api.client
-
-import java.util.*
+package pl.kacosmetology.api.account.client
 
 data class ClientResponse(
     val id: Long,

@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import pl.kacosmetology.api.client.Gender.MALE
+import pl.kacosmetology.api.account.client.Client
+import pl.kacosmetology.api.account.client.ClientRepository
+import pl.kacosmetology.api.account.client.Gender.MALE
 import kotlin.test.Test
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -20,7 +22,7 @@ class ClientRepositoryTest(
         lastName = "testemailcom",
         phoneNumber = "555556789",
         gender = MALE,
-        password = "password2!AA",
+        accountPassword = "password2!AA",
     )
 
     @Test

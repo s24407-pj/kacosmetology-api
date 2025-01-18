@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetails
 import pl.kacosmetology.api.auth.models.RefreshToken
 import pl.kacosmetology.api.auth.models.requests.AuthRequest
+import pl.kacosmetology.api.auth.models.requests.RefreshTokenRequest
 import pl.kacosmetology.api.auth.repositories.RefreshTokenRepository
 import pl.kacosmetology.api.auth.services.AuthService
 import pl.kacosmetology.api.auth.services.BlacklistTokenService
@@ -94,6 +95,7 @@ class AuthServiceTest {
         val email = "email"
         val userMock = mockk<UserDetails>()
         val refreshTokenMock = RefreshToken(token, email, 1000)
+        val refreshTokenRequest = RefreshTokenRequest(token, false)
 
         every { mockTokenService.extractEmail(token) } returns email
         every { mockUserDetailsService.loadUserByUsername(email) } returns userMock
@@ -109,7 +111,7 @@ class AuthServiceTest {
         every { mockRefreshTokenRepository.save(any()) } returns mockk()
 
         // when
-        val result = underTestService.refreshAccessToken(token)
+        val result = underTestService.refreshAccessToken(refreshTokenRequest)
 
         // then
         verify { mockTokenService.extractEmail(token) }
@@ -128,6 +130,7 @@ class AuthServiceTest {
         val email = "email"
         val userMock = mockk<UserDetails>()
         val refreshTokenMock = RefreshToken(token, email, 1000)
+        val refreshTokenRequest = RefreshTokenRequest(token, false)
 
         every { mockTokenService.extractEmail(token) } returns email
         every { mockUserDetailsService.loadUserByUsername(email) } returns userMock
@@ -139,7 +142,7 @@ class AuthServiceTest {
 
         // when
         try {
-            underTestService.refreshAccessToken(token)
+            underTestService.refreshAccessToken(refreshTokenRequest)
         } catch (e: InvalidTokenException) {
             // then
             assert(true)

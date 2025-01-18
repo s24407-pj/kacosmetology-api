@@ -2,11 +2,13 @@ package pl.kacosmetology.api.auth.services
 
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import pl.kacosmetology.api.auth.models.RefreshToken
 import pl.kacosmetology.api.auth.models.TokenType.ACCESS
 import pl.kacosmetology.api.auth.models.TokenType.REFRESH
 import pl.kacosmetology.api.auth.models.requests.AuthRequest
+import pl.kacosmetology.api.auth.models.requests.RefreshTokenRequest
 import pl.kacosmetology.api.auth.models.responses.AuthResponse
 import pl.kacosmetology.api.auth.repositories.RefreshTokenRepository
 import pl.kacosmetology.api.config.JwtProperties
@@ -15,43 +17,43 @@ import pl.kacosmetology.api.exception.InvalidTokenException
 @Service
 class AuthService(
     private val authManager: AuthenticationManager,
-    private val userDetailsService: CustomUserDetailsService,
+    private val customUserDetailsService: CustomUserDetailsService,
+
     private val tokenService: TokenService,
     private val jwtProperties: JwtProperties,
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val blacklistTokenService: BlacklistTokenService
+    private val blacklistTokenService: BlacklistTokenService,
 ) {
     fun authenticate(authRequest: AuthRequest): AuthResponse {
+
+        val email = authRequest.email
+
         authManager.authenticate(
             UsernamePasswordAuthenticationToken(
-                authRequest.email,
+                email,
                 authRequest.password
             )
         )
 
-        val user = userDetailsService.loadUserByUsername(authRequest.email)
+        val user = customUserDetailsService.loadUserByUsername(email) ?: throw InvalidTokenException("Niepoprawne dane")
 
-        val accessToken = tokenService.generate(user, ACCESS)
-        val refreshToken = tokenService.generate(user, REFRESH)
+        val authResponse = generateTokens(user, email)
 
-        refreshTokenRepository.save(
-            RefreshToken(
-                email = authRequest.email,
-                token = refreshToken,
-                ttl = jwtProperties.refreshTokenExpirationSeconds
-            )
-        )
-
-        return AuthResponse(accessToken, refreshToken, jwtProperties.accessTokenExpirationSeconds)
+        return authResponse
     }
 
-    fun refreshAccessToken(token: String): AuthResponse {
+
+    fun refreshAccessToken(refreshTokenRequest: RefreshTokenRequest): AuthResponse {
+        val token = refreshTokenRequest.token
+
         if (blacklistTokenService.isBlacklisted(token))
             throw InvalidTokenException("Niepoprawny token")
 
         val email = tokenService.extractEmail(token) ?: throw InvalidTokenException("Niepoprawny token")
 
-        val user = userDetailsService.loadUserByUsername(email)
+        val user =
+            customUserDetailsService.loadUserByUsername(email) ?: throw InvalidTokenException("Niepoprawny token")
+
         val refreshToken =
             refreshTokenRepository.findById(token).orElseThrow { InvalidTokenException("Niepoprawny token") }
 
@@ -61,22 +63,34 @@ class AuthService(
 
         blacklistTokenService.addToBlacklist(token)
 
-        val newAccessToken = tokenService.generate(user, ACCESS)
-        val newRefreshToken = tokenService.generate(user, REFRESH)
+        val authResponse = generateTokens(user, email)
+
+        return authResponse
+    }
+
+    private fun generateTokens(
+        user: UserDetails,
+        email: String
+    ): AuthResponse {
+        val accessToken = tokenService.generate(user, ACCESS)
+        val refreshToken = tokenService.generate(user, REFRESH)
 
         refreshTokenRepository.save(
             RefreshToken(
                 email = email,
-                token = newRefreshToken,
+                token = refreshToken,
                 ttl = jwtProperties.refreshTokenExpirationSeconds
             )
         )
 
+
+
         return AuthResponse(
-            accessToken = newAccessToken,
-            refreshToken = newRefreshToken,
-            expires = jwtProperties.accessTokenExpirationSeconds
-        )
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            expires = jwtProperties.accessTokenExpirationSeconds,
+
+            )
     }
 
     fun logout(token: String) {

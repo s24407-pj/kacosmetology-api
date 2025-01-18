@@ -8,10 +8,14 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.security.crypto.password.PasswordEncoder
-import pl.kacosmetology.api.client.Gender.MALE
+import pl.kacosmetology.api.account.Role
+import pl.kacosmetology.api.account.client.Client
+import pl.kacosmetology.api.account.client.ClientRepository
+import pl.kacosmetology.api.account.client.ClientService
+import pl.kacosmetology.api.account.client.Gender.MALE
 import pl.kacosmetology.api.exception.ResourceConflictException
 import pl.kacosmetology.api.exception.ResourceNotFoundException
-import java.util.*
+import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class)
 class ClientServiceTest {
@@ -31,7 +35,7 @@ class ClientServiceTest {
         email = "email@wp.pl",
         phoneNumber = "123456789",
         gender = MALE,
-        password = "password123#."
+        accountPassword = "password123#."
     )
     private val encodedPassword = "encodedPassword"
     private val id = 23L
@@ -53,8 +57,8 @@ class ClientServiceTest {
                 email = client.email,
                 phoneNumber = client.phoneNumber,
                 gender = client.gender,
-                password = encodedPassword,
-                role = Role.USER
+                accountPassword = encodedPassword,
+                role = Role.ROLE_USER
             )
         }
 
@@ -69,11 +73,11 @@ class ClientServiceTest {
                 assert(savedAccount.email == client.email)
                 assert(savedAccount.phoneNumber == client.phoneNumber)
                 assert(savedAccount.password == encodedPassword)
-                assert(savedAccount.role == Role.USER)
+                assert(savedAccount.role == Role.ROLE_USER)
             })
         }
 
-        assert(result == id)
+        assertEquals(id, result)
     }
 
     @Test

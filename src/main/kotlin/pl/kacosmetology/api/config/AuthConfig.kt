@@ -9,27 +9,23 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import pl.kacosmetology.api.client.ClientRepository
-import pl.kacosmetology.api.auth.services.CustomUserDetailsService
+import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
 @EnableConfigurationProperties(JwtProperties::class)
-class AuthConfiguration {
+class AuthConfig {
 
     @Bean
-    fun userDetailsService(clientRepository: ClientRepository): UserDetailsService =
-        CustomUserDetailsService(clientRepository)
+    fun encoder(): PasswordEncoder = BCryptPasswordEncoder()
+
 
     @Bean
-    fun encoder() = BCryptPasswordEncoder()
+    fun authProvider(userDetailsService: UserDetailsService): AuthenticationProvider =
+        DaoAuthenticationProvider().apply {
+            setPasswordEncoder(encoder())
+            setUserDetailsService(userDetailsService)
+        }
 
-    @Bean
-    fun authProvider(clientRepository: ClientRepository): AuthenticationProvider =
-        DaoAuthenticationProvider()
-            .also {
-                it.setUserDetailsService(userDetailsService(clientRepository))
-                it.setPasswordEncoder(encoder())
-            }
 
     @Bean
     fun authManager(config: AuthenticationConfiguration): AuthenticationManager =

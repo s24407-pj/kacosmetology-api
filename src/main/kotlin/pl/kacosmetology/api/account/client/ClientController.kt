@@ -1,4 +1,4 @@
-package pl.kacosmetology.api.client
+package pl.kacosmetology.api.account.client
 
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus.CREATED
@@ -40,11 +40,12 @@ class ClientController(
 
     private fun ClientRequest.toModel() =
         Client(
+
             firstName = firstName,
             lastName = lastName,
             email = email,
             phoneNumber = phoneNumber,
-            password = password,
+            accountPassword = password,
             gender = gender
         )
 

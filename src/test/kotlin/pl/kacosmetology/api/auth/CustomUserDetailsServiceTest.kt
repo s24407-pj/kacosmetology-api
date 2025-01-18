@@ -7,27 +7,24 @@ import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.security.core.userdetails.UsernameNotFoundException
-import pl.kacosmetology.api.client.Client
-import pl.kacosmetology.api.client.ClientRepository
-import pl.kacosmetology.api.client.Gender.FEMALE
+import pl.kacosmetology.api.account.AccountDto
+import pl.kacosmetology.api.account.AccountRepository
+import pl.kacosmetology.api.account.Role
 import pl.kacosmetology.api.auth.services.CustomUserDetailsService
+import pl.kacosmetology.api.exception.ResourceNotFoundException
 
 @ExtendWith(MockKExtension::class)
 class CustomUserDetailsServiceTest {
 
 
-    private val client = Client(
-        firstName = "Janusz",
-        lastName = "Kowalski",
+    private val account = AccountDto(
         email = "test@email.com",
-        phoneNumber = "123456789",
-        password = "password",
-        gender = FEMALE
+        accountPassword = "password",
+        role = Role.ROLE_USER
     )
 
     @MockK
-    lateinit var mockRepository: ClientRepository
+    lateinit var mockRepository: AccountRepository
 
     @InjectMockKs
     lateinit var underTestService: CustomUserDetailsService
@@ -36,15 +33,16 @@ class CustomUserDetailsServiceTest {
     fun `should load by username`() {
         // Given
 
-        every { mockRepository.findByEmail(any()) } returns client
+        every { mockRepository.findByEmail(any()) } returns account
 
 
         // When
-        val result = underTestService.loadUserByUsername(client.email)
+        val result = underTestService.loadUserByUsername(account.email)
 
         // Then
-        assert(result.username == client.email)
-        assert(result.password == client.password)
+        assert(result != null)
+        assert(result?.username == account.email)
+        assert(result?.password == account.accountPassword)
 
     }
 
@@ -54,11 +52,10 @@ class CustomUserDetailsServiceTest {
         every { mockRepository.findByEmail(any()) } returns null
 
         // When
-        val exception = assertThrows<UsernameNotFoundException> {
-            underTestService.loadUserByUsername(client.email)
+        assertThrows<ResourceNotFoundException> {
+            underTestService.loadUserByUsername(account.email)
         }
 
-        // Then
-        assert(exception.message == "Nie znaleziono użytkownika")
+
     }
 }

@@ -16,6 +16,7 @@ import pl.kacosmetology.api.auth.services.TokenService
 @Component
 class JwtAuthFilter(
     private val userDetailsService: CustomUserDetailsService,
+
     private val tokenService: TokenService,
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
@@ -39,9 +40,17 @@ class JwtAuthFilter(
 
         val email = tokenService.extractEmail(jwtToken)
 
-        if (email == null && SecurityContextHolder.getContext().authentication != null) return
+        if (email == null && SecurityContextHolder.getContext().authentication != null) {
+            filterChain.doFilter(request, response)
+            return
+        }
 
-        val foundAccount = userDetailsService.loadUserByUsername(email!!)
+
+        val foundAccount = userDetailsService.loadUserByUsername(email!!) ?: run {
+            filterChain.doFilter(request, response)
+            return
+        }
+
 
         if (tokenService.isValid(jwtToken, foundAccount)) {
             updateSecurityContext(foundAccount, request)

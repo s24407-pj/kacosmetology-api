@@ -2,5 +2,6 @@ package pl.kacosmetology.api.auth.models.requests
 
 data class AuthRequest(
     val email: String,
-    val password: String
+    val password: String,
+    val isAdmin: Boolean = false
 )

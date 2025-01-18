@@ -1,4 +1,4 @@
-package pl.kacosmetology.api.client
+package pl.kacosmetology.api.account.client
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank

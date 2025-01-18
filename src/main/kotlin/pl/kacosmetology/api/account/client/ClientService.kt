@@ -1,10 +1,9 @@
-package pl.kacosmetology.api.client
+package pl.kacosmetology.api.account.client
 
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import pl.kacosmetology.api.exception.ResourceConflictException
 import pl.kacosmetology.api.exception.ResourceNotFoundException
-import java.util.*
 
 @Service
 class ClientService(
@@ -17,7 +16,7 @@ class ClientService(
         }
 
         val accountWithHashedPwd = client.copy(
-            password = passwordEncoder.encode(client.password),
+            accountPassword = passwordEncoder.encode(client.password),
         )
 
         val savedAccount = clientRepository.save(accountWithHashedPwd)
